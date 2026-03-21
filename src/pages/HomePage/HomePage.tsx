@@ -12,23 +12,23 @@ import { Icon12Star } from "@vkontakte/icons";
 import { useEffect, useState } from "react";
 import { MOCK_MOVIES } from "../../constants/movies";
 import type { Movie } from "../../api/types";
-import { moviesService } from "../../api/services/movies";
 import { getMovieTitle, getPosterUrl, getRatingColor } from "../../utils/movie";
+import { MovieFilters } from "../../features/filters";
 import styles from "./HomePage.module.css";
 
 export const HomePage = () => {
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
+  const [filteredMovies, setFilteredMovies] = useState<Movie[]>([]);
 
   useEffect(() => {
     const loadMovies = async () => {
       try {
-        const moviesResponse = await moviesService.getMovies();
-        setMovies(moviesResponse.docs);
-        await new Promise(res => setTimeout(() => res(null), 2000));
+        setMovies(MOCK_MOVIES);
+        setFilteredMovies(MOCK_MOVIES);
+        await new Promise((res) => setTimeout(() => res(null), 1000));
       } catch (error) {
         console.error("Ошибка загрузки фильмов:", error);
-        setMovies(MOCK_MOVIES);
       } finally {
         setLoading(false);
       }
@@ -37,16 +37,24 @@ export const HomePage = () => {
     loadMovies();
   }, []);
 
+  const handleFilter = (filtered: Movie[]) => {
+    setFilteredMovies(filtered);
+  };
+
   if (loading) {
     return <Spinner size="xl" />;
   }
 
   return (
     <Box className={styles.container}>
+      <MovieFilters movies={movies} onFilter={handleFilter} />
+      
       <Group>
-        <Header>Популярные фильмы</Header>
+        <Box className={styles.resultsHeader}>
+          <Header>Найдено фильмов: {filteredMovies.length}</Header>
+        </Box>
         <div className={styles.grid}>
-          {movies.map((movie) => {
+          {filteredMovies.map((movie) => {
             const posterUrl = getPosterUrl(movie);
             const movieTitle = getMovieTitle(movie);
             const rating = movie.rating?.kp || movie.rating?.imdb;
