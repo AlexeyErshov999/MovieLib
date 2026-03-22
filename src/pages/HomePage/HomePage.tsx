@@ -10,6 +10,7 @@ import {
 } from "@vkontakte/vkui";
 import { Icon12Star } from "@vkontakte/icons";
 import { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { MOCK_MOVIES } from "../../constants/movies";
 import type { Movie } from "../../api/types";
 import { getMovieTitle, getPosterUrl, getRatingColor } from "../../utils/movie";
@@ -17,6 +18,7 @@ import { MovieFilters } from "../../features/filters";
 import styles from "./HomePage.module.css";
 
 export const HomePage = () => {
+  const navigate = useNavigate();
   const [movies, setMovies] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
   const [filteredMovies, setFilteredMovies] = useState<Movie[]>([]);
@@ -26,7 +28,7 @@ export const HomePage = () => {
       try {
         setMovies(MOCK_MOVIES);
         setFilteredMovies(MOCK_MOVIES);
-        await new Promise((res) => setTimeout(() => res(null), 1000));
+        await new Promise((res) => setTimeout(() => res(null), 800));
       } catch (error) {
         console.error("Ошибка загрузки фильмов:", error);
       } finally {
@@ -65,7 +67,7 @@ export const HomePage = () => {
                 key={movie.id}
                 mode="outline"
                 className={styles.card}
-                onClick={() => console.log("Movie clicked:", movie.id)}
+                onClick={() => navigate(`/movie/${movie.id}`)}
               >
                 <div className={styles.posterContainer}>
                   {posterUrl ? (
