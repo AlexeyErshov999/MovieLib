@@ -10,6 +10,12 @@
   margin-bottom: 16px;
 }
 
+.headerButtons {
+  display: flex;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
 .contentWrapper {
   display: flex;
   gap: 20px;

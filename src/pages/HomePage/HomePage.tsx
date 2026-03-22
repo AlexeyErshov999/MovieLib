@@ -44,13 +44,19 @@ export const HomePage = () => {
   };
 
   if (loading) {
-    return <Spinner size="xl" />;
+    return (
+      <Box className={styles.container}>
+        <div className={styles.spinnerContainer}>
+          <Spinner size="xl" />
+        </div>
+      </Box>
+    );
   }
 
   return (
     <Box className={styles.container}>
       <MovieFilters movies={movies} onFilter={handleFilter} />
-      
+
       <Group>
         <Box className={styles.resultsHeader}>
           <Header>Найдено фильмов: {filteredMovies.length}</Header>
@@ -90,8 +96,15 @@ export const HomePage = () => {
                   <div className={styles.ratingBadge}>
                     {rating ? (
                       <>
-                        <Icon12Star fill={ratingColor} className={styles.starIcon} />
-                        <Text weight="2" className={styles.ratingText} style={{ color: ratingColor }}>
+                        <Icon12Star
+                          fill={ratingColor}
+                          className={styles.starIcon}
+                        />
+                        <Text
+                          weight="2"
+                          className={styles.ratingText}
+                          style={{ color: ratingColor }}
+                        >
                           {rating.toFixed(1)}
                         </Text>
                       </>
