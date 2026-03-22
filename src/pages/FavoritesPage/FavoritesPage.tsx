@@ -10,12 +10,15 @@ import {
   Box,
   Spinner,
   IconButton,
+  Button,
+  ModalRoot,
+  ModalPage,
 } from "@vkontakte/vkui";
 import {
   Icon24ArrowLeftOutline,
   Icon12Star,
   Icon24FavoriteOutline,
-  Icon24Favorite,
+  Icon24TrashSimpleOutline,
 } from "@vkontakte/icons";
 import { favoritesModel } from "../../features/favorites/model";
 import { getMovieTitle, getPosterUrl, getRatingColor } from "../../utils/movie";
@@ -28,6 +31,7 @@ export const FavoritesPage = () => {
   const [favorites, setFavorites] = useState<Movie[]>([]);
   const [filteredFavorites, setFilteredFavorites] = useState<Movie[]>([]);
   const [loading, setLoading] = useState(true);
+  const [movieToRemove, setMovieToRemove] = useState<Movie | null>(null);
 
   useEffect(() => {
     favoritesModel.init();
@@ -45,8 +49,19 @@ export const FavoritesPage = () => {
     setFilteredFavorites(filtered);
   };
 
-  const handleRemove = (movieId: number) => {
-    favoritesModel.remove(movieId);
+  const handleRemoveClick = (movie: Movie) => {
+    setMovieToRemove(movie);
+  };
+
+  const handleConfirmRemove = () => {
+    if (movieToRemove) {
+      favoritesModel.remove(movieToRemove.id);
+    }
+    setMovieToRemove(null);
+  };
+
+  const handleCancelRemove = () => {
+    setMovieToRemove(null);
   };
 
   if (loading) {
@@ -76,7 +91,7 @@ export const FavoritesPage = () => {
         <>
           <MovieFilters movies={favorites} onFilter={handleFilter} />
 
-          <Group>
+          <Group className={styles.scrollContent}>
             <Header>Найдено: {filteredFavorites.length}</Header>
             <div className={styles.grid}>
               {filteredFavorites.map((movie) => {
@@ -96,10 +111,10 @@ export const FavoritesPage = () => {
                       className={styles.removeButton}
                       onClick={(e) => {
                         e.stopPropagation();
-                        handleRemove(movie.id);
+                        handleRemoveClick(movie);
                       }}
                     >
-                      <Icon24Favorite fill="#e64646" width={20} height={20} />
+                      <Icon24TrashSimpleOutline fill={'red'} width={20} height={20} />
                     </IconButton>
 
                     <div className={styles.posterContainer}>
@@ -124,7 +139,7 @@ export const FavoritesPage = () => {
                         <div className={styles.ratingBadge}>
                           <Icon12Star
                             fill={ratingColor}
-                            className={styles.starIcon}
+                            className={styles.trashIcon}
                           />
                           <Text
                             weight="2"
@@ -157,6 +172,43 @@ export const FavoritesPage = () => {
           </Group>
         </>
       )}
+
+      <ModalRoot
+        activeModal={movieToRemove ? "confirm-remove" : undefined}
+        onClose={handleCancelRemove}
+      >
+        <ModalPage
+          id="confirm-remove"
+          onClose={handleCancelRemove}
+          header={<Header>Удалить из избранного</Header>}
+        >
+          <Group>
+            <Box style={{ padding: 16, textAlign: "center" }}>
+              <Text weight="2">
+                {movieToRemove
+                  ? `Вы уверены, что хотите удалить "${getMovieTitle(movieToRemove)}" из избранного?`
+                  : ""}
+              </Text>
+            </Box>
+
+            <div
+              style={{
+                display: "flex",
+                gap: 12,
+                padding: 16,
+                justifyContent: "center",
+              }}
+            >
+              <Button size="l" mode="secondary" onClick={handleCancelRemove}>
+                Отмена
+              </Button>
+              <Button size="l" mode="primary" onClick={handleConfirmRemove}>
+                Удалить
+              </Button>
+            </div>
+          </Group>
+        </ModalPage>
+      </ModalRoot>
     </Box>
   );
 };

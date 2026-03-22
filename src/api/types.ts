@@ -12,6 +12,10 @@ export interface Poster {
   previewUrl?: string | null;
 }
 
+export interface Country {
+  name: string;
+}
+
 export interface Movie {
   id: number;
   name?: string | null;
@@ -21,6 +25,12 @@ export interface Movie {
   genres?: Genre[] | null;
   description?: string | null;
   poster?: Poster | null;
+  movieLength?: number | null;
+  countries?: Country[] | null;
+  shortDescription?: string | null;
+  slogan?: string | null;
+  ratingMpaa?: string | null;
+  ageRating?: string | null;
 }
 
 export interface SearchMoviesResponse {

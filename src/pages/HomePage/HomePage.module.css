@@ -2,11 +2,27 @@
   width: 70%;
   padding: 0 16px;
   margin: 0 auto;
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 130px);
+  overflow: hidden;
+}
+
+.filters {
+  flex-shrink: 0;
 }
 
 .resultsHeader {
   padding: 0;
   margin-bottom: 8px;
+  flex-shrink: 0;
+}
+
+.scrollContent {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  min-height: 0;
 }
 
 .grid {
