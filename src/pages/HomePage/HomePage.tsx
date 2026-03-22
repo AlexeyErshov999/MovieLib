@@ -9,10 +9,10 @@ import {
   Spinner,
 } from "@vkontakte/vkui";
 import { Icon12Star } from "@vkontakte/icons";
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUnit } from "effector-react";
-import { $moviesStore, $moviesLoading } from "../../features/movies/model";
+import { $moviesStore, $moviesLoading, $loadingMore, $hasMore, moviesModel } from "../../features/movies/model";
 import type { Movie } from "../../api/types";
 import { getMovieTitle, getPosterUrl, getRatingColor } from "../../utils/movie";
 import { MovieFilters } from "../../features/filters";
@@ -22,7 +22,10 @@ export const HomePage = () => {
   const navigate = useNavigate();
   const movies = useUnit($moviesStore);
   const loading = useUnit($moviesLoading);
+  const loadingMore = useUnit($loadingMore);
+  const hasMore = useUnit($hasMore);
   const [filteredMovies, setFilteredMovies] = useState<Movie[]>([]);
+  const scrollContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setFilteredMovies(movies);
@@ -31,6 +34,25 @@ export const HomePage = () => {
   const handleFilter = (filtered: Movie[]) => {
     setFilteredMovies(filtered);
   };
+
+  useEffect(() => {
+    const container = scrollContainerRef.current;
+    if (!container) return;
+
+    const handleScroll = () => {
+      if (loadingMore || !hasMore) return;
+
+      const { scrollTop, scrollHeight, clientHeight } = container;
+      const scrollBottom = scrollHeight - scrollTop - clientHeight;
+
+      if (scrollBottom < 300) {
+        moviesModel.loadMore();
+      }
+    };
+
+    container.addEventListener('scroll', handleScroll);
+    return () => container.removeEventListener('scroll', handleScroll);
+  }, [loadingMore, hasMore]);
 
   if (loading) {
     return (
@@ -48,80 +70,91 @@ export const HomePage = () => {
         <MovieFilters movies={movies} onFilter={handleFilter} />
       </div>
 
-      <Group className={styles.scrollContent}>
-        <Box className={styles.resultsHeader}>
-          <Header>Найдено фильмов: {filteredMovies.length}</Header>
-        </Box>
-        <div className={styles.grid}>
-          {filteredMovies.map((movie) => {
-            const posterUrl = getPosterUrl(movie);
-            const movieTitle = getMovieTitle(movie);
-            const rating = movie.rating?.kp || movie.rating?.imdb;
-            const ratingColor = rating ? getRatingColor(rating) : undefined;
+      <div 
+        ref={scrollContainerRef}
+        className={styles.scrollContent}
+      >
+        <Group>
+          <Box className={styles.resultsHeader}>
+            <Header>Найдено фильмов: {filteredMovies.length}</Header>
+          </Box>
+          <div className={styles.grid}>
+            {filteredMovies.map((movie) => {
+              const posterUrl = getPosterUrl(movie);
+              const movieTitle = getMovieTitle(movie);
+              const rating = movie.rating?.kp || movie.rating?.imdb;
+              const ratingColor = rating ? getRatingColor(rating) : undefined;
 
-            return (
-              <Card
-                key={movie.id}
-                mode="outline"
-                className={styles.card}
-                onClick={() => navigate(`/movie/${movie.id}`)}
-              >
-                <div className={styles.posterContainer}>
-                  {posterUrl ? (
-                    <div className={styles.posterWrapper}>
-                      <img
-                        src={posterUrl}
-                        alt={movieTitle}
-                        className={styles.posterImage}
-                        loading="lazy"
-                      />
-                    </div>
-                  ) : (
-                    <div className={styles.posterPlaceholder}>
-                      <Text weight="2" className={styles.placeholderText}>
-                        {movieTitle}
-                      </Text>
-                    </div>
-                  )}
-
-                  <div className={styles.ratingBadge}>
-                    {rating ? (
-                      <>
-                        <Icon12Star
-                          fill={ratingColor}
-                          className={styles.starIcon}
+              return (
+                <Card
+                  key={movie.id}
+                  mode="outline"
+                  className={styles.card}
+                  onClick={() => navigate(`/movie/${movie.id}`)}
+                >
+                  <div className={styles.posterContainer}>
+                    {posterUrl ? (
+                      <div className={styles.posterWrapper}>
+                        <img
+                          src={posterUrl}
+                          alt={movieTitle}
+                          className={styles.posterImage}
+                          loading="lazy"
                         />
-                        <Text
-                          weight="2"
-                          className={styles.ratingText}
-                          style={{ color: ratingColor }}
-                        >
-                          {rating.toFixed(1)}
-                        </Text>
-                      </>
+                      </div>
                     ) : (
-                      <Text weight="2" className={styles.noRatingText}>
-                        Нет рейтинга
-                      </Text>
+                      <div className={styles.posterPlaceholder}>
+                        <Text weight="2" className={styles.placeholderText}>
+                          {movieTitle}
+                        </Text>
+                      </div>
                     )}
-                  </div>
-                </div>
 
-                <div className={styles.content}>
-                  <div className={styles.yearBadge}>
-                    <Caption level="2" className={styles.yearText}>
-                      {movie.year || "Нет года"}
-                    </Caption>
+                    <div className={styles.ratingBadge}>
+                      {rating ? (
+                        <>
+                          <Icon12Star
+                            fill={ratingColor}
+                            className={styles.starIcon}
+                          />
+                          <Text
+                            weight="2"
+                            className={styles.ratingText}
+                            style={{ color: ratingColor }}
+                          >
+                            {rating.toFixed(1)}
+                          </Text>
+                        </>
+                      ) : (
+                        <Text weight="2" className={styles.noRatingText}>
+                          Нет рейтинга
+                        </Text>
+                      )}
+                    </div>
                   </div>
-                  <Title level="3" weight="2" className={styles.title}>
-                    {movieTitle}
-                  </Title>
-                </div>
-              </Card>
-            );
-          })}
-        </div>
-      </Group>
+
+                  <div className={styles.content}>
+                    <div className={styles.yearBadge}>
+                      <Caption level="2" className={styles.yearText}>
+                        {movie.year || "Нет года"}
+                      </Caption>
+                    </div>
+                    <Title level="3" weight="2" className={styles.title}>
+                      {movieTitle}
+                    </Title>
+                  </div>
+                </Card>
+              );
+            })}
+          </div>
+
+          {loadingMore && (
+            <div className={styles.loadingMore}>
+              <Spinner size="m" />
+            </div>
+          )}
+        </Group>
+      </div>
     </Box>
   );
 };

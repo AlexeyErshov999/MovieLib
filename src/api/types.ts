@@ -39,6 +39,7 @@ export interface SearchMoviesResponse {
   limit: number;
   page: number;
   pages: number;
+  next?: string | null;
 }
 
 export interface ApiError {
