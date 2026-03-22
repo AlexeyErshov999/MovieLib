@@ -11,7 +11,7 @@ class MoviesService {
       const params: Record<string, string | number> = { limit };
       
       if (cursor) {
-        params.page = cursor;
+        params.next = cursor;
       }
       
       const response: AxiosResponse<SearchMoviesResponse> = await api.get('/v1.5/movie', {
@@ -21,7 +21,13 @@ class MoviesService {
       return response.data;
     } catch (error) {
       console.error('Error loading movies:', error);
-      return { docs: [], total: 0, limit: 50, page: 1, pages: 0, next: null };
+      return {
+        docs: [],
+        limit: 50,
+        next: null,
+        hasNext: false,
+        hasPrev: false,
+      };
     }
   }
 }

@@ -26,6 +26,7 @@ export const HomePage = () => {
   const hasMore = useUnit($hasMore);
   const [filteredMovies, setFilteredMovies] = useState<Movie[]>([]);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
+  const sentinelRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
     setFilteredMovies(movies);
@@ -36,23 +37,24 @@ export const HomePage = () => {
   };
 
   useEffect(() => {
-    const container = scrollContainerRef.current;
-    if (!container) return;
+    if (loading) return;
 
-    const handleScroll = () => {
-      if (loadingMore || !hasMore) return;
+    const root = scrollContainerRef.current;
+    const sentinel = sentinelRef.current;
+    if (!root || !sentinel) return;
 
-      const { scrollTop, scrollHeight, clientHeight } = container;
-      const scrollBottom = scrollHeight - scrollTop - clientHeight;
-
-      if (scrollBottom < 300) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const [entry] = entries;
+        if (!entry?.isIntersecting || loadingMore || !hasMore) return;
         moviesModel.loadMore();
-      }
-    };
+      },
+      { root, rootMargin: "240px", threshold: 0 }
+    );
 
-    container.addEventListener('scroll', handleScroll);
-    return () => container.removeEventListener('scroll', handleScroll);
-  }, [loadingMore, hasMore]);
+    observer.observe(sentinel);
+    return () => observer.disconnect();
+  }, [loading, loadingMore, hasMore]);
 
   if (loading) {
     return (
@@ -153,6 +155,11 @@ export const HomePage = () => {
               <Spinner size="m" />
             </div>
           )}
+          <div
+            ref={sentinelRef}
+            className={styles.scrollSentinel}
+            aria-hidden
+          />
         </Group>
       </div>
     </Box>
