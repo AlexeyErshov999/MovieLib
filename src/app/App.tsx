@@ -28,7 +28,7 @@ export const App = () => {
       <Epic activeStory={getActiveTab()}>
         <View id="home" activePanel="home">
           <Panel id="home">
-            <PanelHeader>Фильмы</PanelHeader>
+            <PanelHeader>Фильмы by Alexey Ershov</PanelHeader>
             <HomePage />
           </Panel>
         </View>
