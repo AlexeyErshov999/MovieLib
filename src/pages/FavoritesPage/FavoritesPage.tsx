@@ -107,16 +107,6 @@ export const FavoritesPage = () => {
                     className={styles.card}
                     onClick={() => navigate(`/movie/${movie.id}`)}
                   >
-                    <IconButton
-                      className={styles.removeButton}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleRemoveClick(movie);
-                      }}
-                    >
-                      <Icon24TrashSimpleOutline fill={'red'} width={20} height={20} />
-                    </IconButton>
-
                     <div className={styles.posterContainer}>
                       {posterUrl ? (
                         <div className={styles.posterWrapper}>
@@ -164,6 +154,14 @@ export const FavoritesPage = () => {
                       <Title level="3" weight="2" className={styles.title}>
                         {movieTitle}
                       </Title>
+                      <IconButton
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleRemoveClick(movie);
+                      }}
+                    >
+                      <Icon24TrashSimpleOutline fill={'gray'} width={20} height={20} />
+                    </IconButton>
                     </div>
                   </Card>
                 );

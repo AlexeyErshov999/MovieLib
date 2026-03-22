@@ -141,9 +141,9 @@ export const MovieDetailPage = () => {
         {movie && (
           <IconButton onClick={handleToggleFavorite}>
             {isFavorite ? (
-              <Icon24Favorite fill="#16ff01" width={30} height={30} />
-            ) : (
               <Icon24Favorite fill="#e64646" width={30} height={30} />
+            ) : (
+              <Icon24Favorite fill="gray" width={30} height={30} />
             )}
           </IconButton>
         )}

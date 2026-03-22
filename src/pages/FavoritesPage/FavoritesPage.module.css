@@ -57,14 +57,6 @@
   box-shadow: 0 8px 24px rgba(0, 0, 0, 0.12);
 }
 
-.removeButton {
-  position: absolute;
-  top: 4px;
-  right: 4px;
-  z-index: 10;
-  background-color: rgba(0, 0, 0, 0.6);
-}
-
 .posterContainer {
   position: relative;
   flex-shrink: 0;
@@ -75,8 +67,6 @@
   height: 160px;
   background-color: var(--vkui--color_background_secondary);
   display: flex;
-  align-items: center;
-  justify-content: center;
   overflow: hidden;
 }
 
@@ -143,6 +133,9 @@
 }
 
 .content {
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
   padding: 10px;
   flex: 1;
   position: relative;
