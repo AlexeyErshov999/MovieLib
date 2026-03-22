@@ -1,24 +1,42 @@
 import { api } from '../axios';
 import type { AxiosResponse } from 'axios';
-import type { SearchMoviesResponse } from '../types';
-import { MOVIES_PER_PAGE } from '../../constants/movies';
+import type { SearchMoviesResponse, ApiGenre } from '../types';
 
 class MoviesService {
   async getMovies(
-    limit: number = MOVIES_PER_PAGE,
-    cursor?: string
+    limit: number = 50,
+    cursor?: string | null
   ): Promise<SearchMoviesResponse> {
-    const params: Record<string, string | number> = { limit };
-    
-    if (cursor) {
-      params.next = cursor;
+    try {
+      const params: Record<string, string | number> = { limit };
+      
+      if (cursor) {
+        params.next = cursor;
+      }
+      
+      const response: AxiosResponse<SearchMoviesResponse> = await api.get('/v1.5/movie', {
+        params,
+      });
+      
+      return response.data;
+    } catch (error) {
+      console.error('Error searching movies:', error);
+      return { docs: [], total: 0, limit: 50, page: 1, pages: 0, next: null };
     }
+  }
     
-    const response: AxiosResponse<SearchMoviesResponse> = await api.get('/v1.5/movie', {
-      params,
-    });
-    
-    return response.data;
+  async getGenres(): Promise<ApiGenre[]> {
+    try {
+      const response: AxiosResponse<ApiGenre[]> = await api.get('/v1/movie/possible-values-by-field', {
+        params: {
+          field: 'genres.name',
+        },
+      });  
+      return response.data || [];
+    } catch (error) {
+      console.error('Error fetching genres:', error);
+      return [];
+    }
   }
 }
 

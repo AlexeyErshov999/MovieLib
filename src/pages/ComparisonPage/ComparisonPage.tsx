@@ -1,9 +1,5 @@
 import { useNavigate } from "react-router-dom";
-import {
-  Text,
-  Box,
-  IconButton,
-} from "@vkontakte/vkui";
+import { Text, Box, IconButton } from "@vkontakte/vkui";
 import {
   Icon24ArrowLeftOutline,
   Icon24Favorite,
@@ -11,7 +7,10 @@ import {
   Icon24TrashSimpleOutline,
 } from "@vkontakte/icons";
 import { useUnit } from "effector-react";
-import { comparisonModel, $comparisonStore } from "../../features/comparison/model/ComparisonStore";
+import {
+  comparisonModel,
+  $comparisonStore,
+} from "../../features/comparison/model/ComparisonStore";
 import { getMovieTitle, getPosterUrl, getRatingColor } from "../../utils/movie";
 import styles from "./ComparisonPage.module.css";
 
@@ -139,7 +138,7 @@ export const ComparisonPage = () => {
               <tr>
                 <td className={styles.rowLabel}>Длительность</td>
                 {movies.map((movie) => (
-                  <td key={movie.id}>{movie.movieLength} мин</td>
+                  <td key={movie.id}>{movie.movieLength ? `${movie.movieLength} мин` : 'Не указано'}</td>
                 ))}
               </tr>
             </tbody>

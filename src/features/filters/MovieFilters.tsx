@@ -9,11 +9,12 @@ import {
   Input,
   Button,
   FormLayoutGroup,
-  Button as TagButton,
+  Spinner,
 } from "@vkontakte/vkui";
 import { Icon16Clear } from "@vkontakte/icons";
+import { useUnit } from "effector-react";
 import type { Movie } from "../../api/types";
-import { ALL_GENRES } from "../../constants/genres";
+import { $genresStore, $genresLoading, genresModel } from "../genres/model";
 import { MIN_YEAR } from "../../constants/movies";
 
 interface MovieFiltersProps {
@@ -25,6 +26,9 @@ const currentYear = new Date().getFullYear();
 
 export const MovieFilters = ({ movies, onFilter }: MovieFiltersProps) => {
   const [searchParams, setSearchParams] = useSearchParams();
+
+  const genres = useUnit($genresStore);
+  const genresLoading = useUnit($genresLoading);
 
   const [selectedGenres, setSelectedGenres] = useState<string[]>(() => {
     const genresParam = searchParams.get("genres");
@@ -47,6 +51,12 @@ export const MovieFilters = ({ movies, onFilter }: MovieFiltersProps) => {
   const [yearTo, setYearTo] = useState<string>(() => {
     return searchParams.get("yearTo") || String(currentYear);
   });
+
+  useEffect(() => {
+    if (genres.length === 0) {
+      genresModel.load();
+    }
+  }, [genres.length]);
 
   useEffect(() => {
     const params = new URLSearchParams();
@@ -100,6 +110,15 @@ export const MovieFilters = ({ movies, onFilter }: MovieFiltersProps) => {
     });
   }, [movies, selectedGenres, ratingRange, yearFrom, yearTo]);
 
+  const genreOptions = useMemo(() => {
+    return genres
+      .filter(g => g.name)
+      .map(g => ({
+        value: g.name!.toLowerCase(),
+        label: g.name!,
+      }));
+  }, [genres]);
+
   const handleGenreChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
     const value = e.target.value;
     if (value && !selectedGenres.includes(value)) {
@@ -128,36 +147,42 @@ export const MovieFilters = ({ movies, onFilter }: MovieFiltersProps) => {
       <Header>Фильтры</Header>
       <FormLayoutGroup>
         <FormItem top="Жанры">
-          <Select
-            placeholder="Выберите жанр"
-            options={ALL_GENRES}
-            value=""
-            onChange={handleGenreChange}
-            searchable
-            style={{ width: "100%" }}
-          />
-          
-          {selectedGenres.length > 0 && (
-            <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 }}>
-              {selectedGenres.map((genre) => {
-                const genreLabel = ALL_GENRES.find((g) => g.value === genre)?.label || genre;
-                return (
-                  <TagButton
-                    key={genre}
-                    mode="secondary"
-                    size="s"
-                    onClick={() => removeGenre(genre)}
-                    after={
-                      <Icon16Clear
-                        style={{ marginLeft: 4, opacity: 0.7 }}
-                      />
-                    }
-                  >
-                    {genreLabel}
-                  </TagButton>
-                );
-              })}
-            </div>
+          {genresLoading ? (
+            <Spinner size="s" />
+          ) : (
+            <>
+              <Select
+                placeholder="Выберите жанр"
+                options={genreOptions}
+                value=""
+                onChange={handleGenreChange}
+                searchable
+                style={{ width: "100%" }}
+              />
+              
+              {selectedGenres.length > 0 && (
+                <div style={{ display: "flex", flexWrap: "wrap", gap: 8, marginTop: 12 }}>
+                  {selectedGenres.map((genre) => {
+                    const genreLabel = genreOptions.find((g) => g.value === genre)?.label || genre;
+                    return (
+                      <Button
+                        key={genre}
+                        mode="secondary"
+                        size="s"
+                        onClick={() => removeGenre(genre)}
+                        after={
+                          <Icon16Clear
+                            style={{ marginLeft: 4, opacity: 0.7 }}
+                          />
+                        }
+                      >
+                        {genreLabel}
+                      </Button>
+                    );
+                  })}
+                </div>
+              )}
+            </>
           )}
         </FormItem>
 

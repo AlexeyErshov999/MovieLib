@@ -2,6 +2,11 @@ export interface Genre {
   name: string;
 }
 
+export interface ApiGenre {
+  name: string | null;
+  slug: string | null;
+}
+
 export interface Rating {
   kp?: number | null;
   imdb?: number | null;
@@ -34,14 +39,11 @@ export interface Movie {
 }
 export interface SearchMoviesResponse {
   docs: Movie[];
+  total: number;
   limit: number;
+  page: number;
+  pages: number;
   next?: string | null;
-  prev?: string | null;
-  hasNext?: boolean;
-  hasPrev?: boolean;
-  total?: number | null;
-  page?: number;
-  pages?: number;
 }
 
 export interface ApiError {

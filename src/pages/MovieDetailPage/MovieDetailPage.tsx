@@ -25,7 +25,10 @@ import {
 import { useUnit } from "effector-react";
 import { getMovieTitle, getPosterUrl, getRatingColor } from "../../utils/movie";
 import { favoritesModel } from "../../features/favorites/model";
-import { comparisonModel, $comparisonStore } from "../../features/comparison/model/ComparisonStore";
+import {
+  comparisonModel,
+  $comparisonStore,
+} from "../../features/comparison/model/ComparisonStore";
 import { $moviesStore, $moviesLoading } from "../../features/movies/model";
 import styles from "./MovieDetailPage.module.css";
 
@@ -45,7 +48,9 @@ export const MovieDetailPage = () => {
     return movies.find((m) => m.id === Number(id)) || null;
   }, [movies, id]);
 
-  const isInComparison = movie ? comparisonMovies.some((m) => m.id === movie.id) : false;
+  const isInComparison = movie
+    ? comparisonMovies.some((m) => m.id === movie.id)
+    : false;
   const comparisonCount = comparisonMovies.length;
 
   useEffect(() => {
@@ -297,7 +302,8 @@ export const MovieDetailPage = () => {
           <Group>
             <Box style={{ padding: 16, textAlign: "center" }}>
               <Text weight="2">
-                В сравнении уже 2 фильма. При добавлении нового первый будет заменён.
+                В сравнении уже 2 фильма. При добавлении нового первый будет
+                заменён.
               </Text>
             </Box>
 
@@ -309,7 +315,11 @@ export const MovieDetailPage = () => {
                 justifyContent: "center",
               }}
             >
-              <Button size="l" mode="secondary" onClick={handleCancelComparison}>
+              <Button
+                size="l"
+                mode="secondary"
+                onClick={handleCancelComparison}
+              >
                 Отмена
               </Button>
               <Button size="l" mode="primary" onClick={handleConfirmComparison}>
