@@ -7,7 +7,7 @@ import { ComparisonPage } from "../pages/ComparisonPage";
 import "./App.css";
 import { ROUTES } from "../constants/routes";
 
-function App() {
+export const App = () => {
   const location = useLocation();
 
   const getActiveTab = () => {
@@ -44,6 +44,4 @@ function App() {
       </div>
     </div>
   );
-}
-
-export default App;
+};

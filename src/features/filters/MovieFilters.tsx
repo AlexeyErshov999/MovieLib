@@ -80,7 +80,7 @@ export const MovieFilters = ({ movies, onFilter }: MovieFiltersProps) => {
       }
 
       const rating = movie.rating?.kp || movie.rating?.imdb;
-      if (rating !== undefined && rating !== null) {
+      if (rating) {
         if (rating < ratingRange[0] || rating > ratingRange[1]) {
           return false;
         }
