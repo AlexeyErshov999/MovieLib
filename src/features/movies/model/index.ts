@@ -1,1 +1,11 @@
-export { moviesModel, $moviesStore, $moviesLoading } from './MoviesStore';
+export { 
+  moviesModel, 
+  $moviesStore, 
+  $moviesLoading, 
+  $loadingMore,
+  $hasMore,
+  $nextCursor
+} from './MoviesStore';
+
+
+

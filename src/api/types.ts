@@ -32,13 +32,16 @@ export interface Movie {
   ratingMpaa?: string | null;
   ageRating?: string | null;
 }
-
 export interface SearchMoviesResponse {
   docs: Movie[];
-  total: number;
   limit: number;
-  page: number;
-  pages: number;
+  next?: string | null;
+  prev?: string | null;
+  hasNext?: boolean;
+  hasPrev?: boolean;
+  total?: number | null;
+  page?: number;
+  pages?: number;
 }
 
 export interface ApiError {
