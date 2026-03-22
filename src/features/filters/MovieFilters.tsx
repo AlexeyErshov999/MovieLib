@@ -14,6 +14,7 @@ import {
 import { Icon16Clear } from "@vkontakte/icons";
 import type { Movie } from "../../api/types";
 import { ALL_GENRES } from "../../constants/genres";
+import { MIN_YEAR } from "../../constants/movies";
 
 interface MovieFiltersProps {
   movies: Movie[];
@@ -40,7 +41,7 @@ export const MovieFilters = ({ movies, onFilter }: MovieFiltersProps) => {
   });
 
   const [yearFrom, setYearFrom] = useState<string>(() => {
-    return searchParams.get("yearFrom") || "1900";
+    return searchParams.get("yearFrom") || MIN_YEAR.toString();
   });
 
   const [yearTo, setYearTo] = useState<string>(() => {
@@ -59,7 +60,7 @@ export const MovieFilters = ({ movies, onFilter }: MovieFiltersProps) => {
     if (ratingRange[1] !== 10) {
       params.set("ratingMax", String(ratingRange[1]));
     }
-    if (yearFrom !== "1900") {
+    if (yearFrom !== MIN_YEAR.toString()) {
       params.set("yearFrom", yearFrom);
     }
     if (yearTo !== String(currentYear)) {
@@ -88,7 +89,7 @@ export const MovieFilters = ({ movies, onFilter }: MovieFiltersProps) => {
 
       const movieYear = movie.year;
       if (movieYear !== undefined && movieYear !== null) {
-        const from = parseInt(yearFrom) || 1900;
+        const from = parseInt(yearFrom) || MIN_YEAR;
         const to = parseInt(yearTo) || currentYear;
         if (movieYear < from || movieYear > to) {
           return false;
@@ -113,7 +114,7 @@ export const MovieFilters = ({ movies, onFilter }: MovieFiltersProps) => {
   const handleReset = () => {
     setSelectedGenres([]);
     setRatingRange([0, 10]);
-    setYearFrom("1900");
+    setYearFrom(MIN_YEAR.toString());
     setYearTo(String(currentYear));
     setSearchParams({}, { replace: true });
   };
@@ -178,7 +179,7 @@ export const MovieFilters = ({ movies, onFilter }: MovieFiltersProps) => {
               placeholder="От"
               value={yearFrom}
               onChange={(e) => setYearFrom(e.target.value)}
-              min={1900}
+              min={MIN_YEAR}
               max={currentYear}
               style={{ width: 100 }}
             />
@@ -188,7 +189,7 @@ export const MovieFilters = ({ movies, onFilter }: MovieFiltersProps) => {
               placeholder="До"
               value={yearTo}
               onChange={(e) => setYearTo(e.target.value)}
-              min={1900}
+              min={MIN_YEAR}
               max={currentYear}
               style={{ width: 100 }}
             />

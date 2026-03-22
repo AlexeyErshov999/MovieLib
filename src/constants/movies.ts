@@ -1,5 +1,7 @@
 import type { Movie } from '../api/types';
 
+export const MIN_YEAR = 1990;
+
 export const MOCK_MOVIES: Movie[] = [
   {
     id: 1,
