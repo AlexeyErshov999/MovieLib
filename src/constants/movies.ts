@@ -1,5 +1,6 @@
 import type { Movie } from '../api/types';
 
+export const MOVIES_PER_PAGE = 50;
 export const MIN_YEAR = 1990;
 
 export const MOCK_MOVIES: Movie[] = [

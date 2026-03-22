@@ -139,23 +139,7 @@ export const ComparisonPage = () => {
               <tr>
                 <td className={styles.rowLabel}>Длительность</td>
                 {movies.map((movie) => (
-                  <td key={movie.id}>{movie.movieLength}</td>
-                ))}
-              </tr>
-              <tr>
-                <td className={styles.rowLabel}>Страна</td>
-                {movies.map((movie) => (
-                  <td key={movie.id}>
-                    {movie.countries && movie.countries.length > 0
-                      ? movie.countries.map((c) => c.name).join(", ")
-                      : "—"}
-                  </td>
-                ))}
-              </tr>
-              <tr>
-                <td className={styles.rowLabel}>Описание</td>
-                {movies.map((movie) => (
-                  <td key={movie.id}>{movie.description || "—"}</td>
+                  <td key={movie.id}>{movie.movieLength} мин</td>
                 ))}
               </tr>
             </tbody>

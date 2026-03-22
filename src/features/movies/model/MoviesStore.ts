@@ -1,6 +1,7 @@
 import { createStore, createEvent, createEffect, sample, combine } from "effector";
 import { moviesService } from "../../../api/services/movies";
 import type { Movie } from "../../../api/types";
+import { MOVIES_PER_PAGE } from "../../../constants/movies";
 
 export const loadMovies = createEvent<void>();
 export const loadMoreMovies = createEvent<void>();
@@ -17,12 +18,12 @@ function paginationFromResponse(response: {
 }
 
 const loadMoviesFx = createEffect(async () => {
-  const response = await moviesService.getMovies(50);
+  const response = await moviesService.getMovies(MOVIES_PER_PAGE);
   return paginationFromResponse(response);
 });
 
 const loadMoreMoviesFx = createEffect(async (cursor: string) => {
-  const response = await moviesService.getMovies(50, cursor);
+  const response = await moviesService.getMovies(MOVIES_PER_PAGE, cursor);
   return paginationFromResponse(response);
 });
 

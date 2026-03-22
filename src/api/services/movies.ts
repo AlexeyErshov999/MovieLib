@@ -1,10 +1,11 @@
 import { api } from '../axios';
 import type { AxiosResponse } from 'axios';
 import type { SearchMoviesResponse } from '../types';
+import { MOVIES_PER_PAGE } from '../../constants/movies';
 
 class MoviesService {
   async getMovies(
-    limit: number = 50,
+    limit: number = MOVIES_PER_PAGE,
     cursor?: string
   ): Promise<SearchMoviesResponse> {
     try {
@@ -23,7 +24,7 @@ class MoviesService {
       console.error('Error loading movies:', error);
       return {
         docs: [],
-        limit: 50,
+        limit: MOVIES_PER_PAGE,
         next: null,
         hasNext: false,
         hasPrev: false,
