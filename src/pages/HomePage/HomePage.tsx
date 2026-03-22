@@ -9,7 +9,7 @@ import {
   Snackbar,
 } from "@vkontakte/vkui";
 import { Icon12Star, Icon28CancelCircleFillRed } from "@vkontakte/icons";
-import { useState, useEffect, useRef } from "react";
+import { useState, useEffect, useRef, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUnit } from "effector-react";
 import { $moviesStore, $moviesLoading, $loadingMore, $hasMore, $moviesError, moviesModel } from "../../features/movies/model";
@@ -27,7 +27,7 @@ export const HomePage = () => {
   const error = useUnit($moviesError);
   const [filteredMovies, setFilteredMovies] = useState<Movie[]>([]);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const isLoadingRef = useRef(false);
+  const loadMoreCalledRef = useRef(false);
 
   useEffect(() => {
     setFilteredMovies(movies);
@@ -37,33 +37,50 @@ export const HomePage = () => {
     setFilteredMovies(filtered);
   };
 
+  const handleLoadMore = useCallback(() => {
+    if (loadingMore || !hasMore || loadMoreCalledRef.current) return;
+    
+    loadMoreCalledRef.current = true;
+    moviesModel.loadMore();
+  }, [loadingMore, hasMore]);
+
+  useEffect(() => {
+    if (!loadingMore && loadMoreCalledRef.current) {
+      loadMoreCalledRef.current = false;
+    }
+  }, [loadingMore]);
+
   useEffect(() => {
     if (loading) return;
 
     const root = scrollContainerRef.current;
     if (!root) return;
 
+    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+
     const handleScroll = () => {
-      if (loadingMore || !hasMore || isLoadingRef.current) return;
+      if (timeoutId) return;
+      
+      timeoutId = setTimeout(() => {
+        timeoutId = null;
+        
+        if (loadingMore || !hasMore || loadMoreCalledRef.current) return;
 
-      const { scrollTop, scrollHeight, clientHeight } = root;
-      const scrollBottom = scrollHeight - scrollTop - clientHeight;
+        const { scrollTop, scrollHeight, clientHeight } = root;
+        const scrollBottom = scrollHeight - scrollTop - clientHeight;
 
-      if (scrollBottom < 300) {
-        isLoadingRef.current = true;
-        moviesModel.loadMore();
-      }
+        if (scrollBottom < 300) {
+          handleLoadMore();
+        }
+      }, 100);
     };
 
     root.addEventListener('scroll', handleScroll);
-    return () => root.removeEventListener('scroll', handleScroll);
-  }, [loading, loadingMore, hasMore]);
-
-  useEffect(() => {
-    if (!loadingMore) {
-      isLoadingRef.current = false;
-    }
-  }, [loadingMore]);
+    return () => {
+      root.removeEventListener('scroll', handleScroll);
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [loading, loadingMore, hasMore, handleLoadMore]);
 
   if (loading) {
     return (
