@@ -92,7 +92,6 @@ export const FavoritesPage = () => {
           <MovieFilters movies={favorites} onFilter={handleFilter} />
 
           <Group className={styles.scrollContent}>
-            <Header>Найдено: {filteredFavorites.length}</Header>
             <div className={styles.grid}>
               {filteredFavorites.map((movie) => {
                 const posterUrl = getPosterUrl(movie);
@@ -125,7 +124,7 @@ export const FavoritesPage = () => {
                         </div>
                       )}
 
-                      {rating && (
+                      {rating ? (
                         <div className={styles.ratingBadge}>
                           <Icon12Star
                             fill={ratingColor}
@@ -139,7 +138,7 @@ export const FavoritesPage = () => {
                             {rating.toFixed(1)}
                           </Text>
                         </div>
-                      )}
+                      ) : null}
 
                       {movie.year && (
                         <div className={styles.yearBadge}>

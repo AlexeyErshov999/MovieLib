@@ -1,6 +1,5 @@
 import {
   Group,
-  Header,
   Card,
   Text,
   Title,
@@ -26,7 +25,7 @@ export const HomePage = () => {
   const hasMore = useUnit($hasMore);
   const [filteredMovies, setFilteredMovies] = useState<Movie[]>([]);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
-  const sentinelRef = useRef<HTMLDivElement>(null);
+  const isLoadingRef = useRef(false);
 
   useEffect(() => {
     setFilteredMovies(movies);
@@ -40,21 +39,29 @@ export const HomePage = () => {
     if (loading) return;
 
     const root = scrollContainerRef.current;
-    const sentinel = sentinelRef.current;
-    if (!root || !sentinel) return;
+    if (!root) return;
 
-    const observer = new IntersectionObserver(
-      (entries) => {
-        const [entry] = entries;
-        if (!entry?.isIntersecting || loadingMore || !hasMore) return;
+    const handleScroll = () => {
+      if (loadingMore || !hasMore || isLoadingRef.current) return;
+
+      const { scrollTop, scrollHeight, clientHeight } = root;
+      const scrollBottom = scrollHeight - scrollTop - clientHeight;
+
+      if (scrollBottom < 300) {
+        isLoadingRef.current = true;
         moviesModel.loadMore();
-      },
-      { root, rootMargin: "240px", threshold: 0 }
-    );
+      }
+    };
 
-    observer.observe(sentinel);
-    return () => observer.disconnect();
+    root.addEventListener('scroll', handleScroll);
+    return () => root.removeEventListener('scroll', handleScroll);
   }, [loading, loadingMore, hasMore]);
+
+  useEffect(() => {
+    if (!loadingMore) {
+      isLoadingRef.current = false;
+    }
+  }, [loadingMore]);
 
   if (loading) {
     return (
@@ -77,9 +84,6 @@ export const HomePage = () => {
         className={styles.scrollContent}
       >
         <Group>
-          <Box className={styles.resultsHeader}>
-            <Header>Найдено фильмов: {filteredMovies.length}</Header>
-          </Box>
           <div className={styles.grid}>
             {filteredMovies.map((movie) => {
               const posterUrl = getPosterUrl(movie);
@@ -155,11 +159,6 @@ export const HomePage = () => {
               <Spinner size="m" />
             </div>
           )}
-          <div
-            ref={sentinelRef}
-            className={styles.scrollSentinel}
-            aria-hidden
-          />
         </Group>
       </div>
     </Box>
