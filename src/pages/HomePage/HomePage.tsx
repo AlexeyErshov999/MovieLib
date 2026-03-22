@@ -6,12 +6,13 @@ import {
   Caption,
   Box,
   Spinner,
+  Snackbar,
 } from "@vkontakte/vkui";
-import { Icon12Star } from "@vkontakte/icons";
+import { Icon12Star, Icon28CancelCircleFillRed } from "@vkontakte/icons";
 import { useState, useEffect, useRef } from "react";
 import { useNavigate } from "react-router-dom";
 import { useUnit } from "effector-react";
-import { $moviesStore, $moviesLoading, $loadingMore, $hasMore, moviesModel } from "../../features/movies/model";
+import { $moviesStore, $moviesLoading, $loadingMore, $hasMore, $moviesError, moviesModel } from "../../features/movies/model";
 import type { Movie } from "../../api/types";
 import { getMovieTitle, getPosterUrl, getRatingColor } from "../../utils/movie";
 import { MovieFilters } from "../../features/filters";
@@ -23,6 +24,7 @@ export const HomePage = () => {
   const loading = useUnit($moviesLoading);
   const loadingMore = useUnit($loadingMore);
   const hasMore = useUnit($hasMore);
+  const error = useUnit($moviesError);
   const [filteredMovies, setFilteredMovies] = useState<Movie[]>([]);
   const scrollContainerRef = useRef<HTMLDivElement>(null);
   const isLoadingRef = useRef(false);
@@ -161,6 +163,17 @@ export const HomePage = () => {
           )}
         </Group>
       </div>
+
+      {error && (
+        <Snackbar
+          layout="vertical"
+          onClose={() => moviesModel.clearError()}
+          before={<Icon28CancelCircleFillRed />}
+          style={{ bottom: 80 }}
+        >
+          {`Ошибка загрузки фильмов: ${error}`}
+        </Snackbar>
+      )}
     </Box>
   );
 };

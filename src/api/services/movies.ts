@@ -8,28 +8,17 @@ class MoviesService {
     limit: number = MOVIES_PER_PAGE,
     cursor?: string
   ): Promise<SearchMoviesResponse> {
-    try {
-      const params: Record<string, string | number> = { limit };
-      
-      if (cursor) {
-        params.next = cursor;
-      }
-      
-      const response: AxiosResponse<SearchMoviesResponse> = await api.get('/v1.5/movie', {
-        params,
-      });
-      
-      return response.data;
-    } catch (error) {
-      console.error('Error loading movies:', error);
-      return {
-        docs: [],
-        limit: MOVIES_PER_PAGE,
-        next: null,
-        hasNext: false,
-        hasPrev: false,
-      };
+    const params: Record<string, string | number> = { limit };
+    
+    if (cursor) {
+      params.next = cursor;
     }
+    
+    const response: AxiosResponse<SearchMoviesResponse> = await api.get('/v1.5/movie', {
+      params,
+    });
+    
+    return response.data;
   }
 }
 

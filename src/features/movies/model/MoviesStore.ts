@@ -5,6 +5,7 @@ import { MOVIES_PER_PAGE } from "../../../constants/movies";
 
 export const loadMovies = createEvent<void>();
 export const loadMoreMovies = createEvent<void>();
+export const clearError = createEvent<void>();
 
 function paginationFromResponse(response: {
   docs?: Movie[];
@@ -45,6 +46,13 @@ export const $hasMore = createStore<boolean>(true)
   .on(loadMoviesFx.doneData, (_, { hasMore }) => hasMore)
   .on(loadMoreMoviesFx.doneData, (_, { hasMore }) => hasMore);
 
+export const $moviesError = createStore<string | null>(null)
+  .on(loadMoviesFx.failData, (_, error) => error.message || "Ошибка загрузки фильмов")
+  .on(loadMoreMoviesFx.failData, (_, error) => error.message || "Ошибка загрузки фильмов")
+  .on(clearError, () => null)
+  .on(loadMoviesFx, () => null)
+  .on(loadMoreMoviesFx, () => null);
+
 sample({
   clock: loadMovies,
   target: loadMoviesFx,
@@ -72,4 +80,5 @@ export const moviesModel = {
   load: () => loadMovies(),
   loadMore: () => loadMoreMovies(),
   getMovieById: (id: number) => $moviesStore.getState().find((m) => m.id === id),
+  clearError: () => clearError(),
 };

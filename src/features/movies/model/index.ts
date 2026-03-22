@@ -4,8 +4,10 @@ export {
   $moviesLoading, 
   $loadingMore,
   $hasMore,
-  $nextCursor
+  $nextCursor,
+  $moviesError
 } from './MoviesStore';
+
 
 
 
