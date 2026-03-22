@@ -55,9 +55,11 @@ export const HomePage = () => {
 
   return (
     <Box className={styles.container}>
-      <MovieFilters movies={movies} onFilter={handleFilter} />
+      <div className={styles.filters}>
+        <MovieFilters movies={movies} onFilter={handleFilter} />
+      </div>
 
-      <Group>
+      <Group className={styles.scrollContent}>
         <Box className={styles.resultsHeader}>
           <Header>Найдено фильмов: {filteredMovies.length}</Header>
         </Box>

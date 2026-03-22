@@ -12,17 +12,22 @@ import {
   Button,
   IconButton,
   ContentBadge,
+  ModalRoot,
+  ModalPage,
 } from "@vkontakte/vkui";
 import {
   Icon24ArrowLeftOutline,
   Icon12Star,
   Icon24CalendarOutline,
   Icon24Favorite,
+  Icon24ArrowLeftRightCornersOutline,
 } from "@vkontakte/icons";
+import { useUnit } from "effector-react";
 import type { Movie } from "../../api/types";
 import { MOCK_MOVIES } from "../../constants/movies";
 import { getMovieTitle, getPosterUrl, getRatingColor } from "../../utils/movie";
 import { favoritesModel } from "../../features/favorites/model";
+import { comparisonModel, $comparisonStore } from "../../features/comparison/model/ComparisonStore";
 import styles from "./MovieDetailPage.module.css";
 
 export const MovieDetailPage = () => {
@@ -32,6 +37,12 @@ export const MovieDetailPage = () => {
   const [movie, setMovie] = useState<Movie | null>(null);
   const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
+  const [modalAction, setModalAction] = useState<"add" | "remove" | null>(null);
+  const [modalComparison, setModalComparison] = useState(false);
+
+  const comparisonMovies = useUnit($comparisonStore);
+  const isInComparison = movie ? comparisonMovies.some((m) => m.id === movie.id) : false;
+  const comparisonCount = comparisonMovies.length;
 
   useEffect(() => {
     const loadMovie = async () => {
@@ -65,13 +76,43 @@ export const MovieDetailPage = () => {
 
   const handleToggleFavorite = () => {
     if (!movie) return;
+    setModalAction(isFavorite ? "remove" : "add");
+  };
 
-    if (isFavorite) {
+  const handleConfirm = () => {
+    if (!movie) return;
+
+    if (modalAction === "remove") {
       favoritesModel.remove(movie.id);
     } else {
       favoritesModel.add(movie);
     }
-    setIsFavorite(!isFavorite);
+    setModalAction(null);
+  };
+
+  const handleCancel = () => {
+    setModalAction(null);
+  };
+
+  const handleCompare = () => {
+    if (isInComparison) {
+      comparisonModel.remove(movie!.id);
+    } else if (comparisonCount >= 2) {
+      setModalComparison(true);
+    } else {
+      comparisonModel.add(movie!);
+    }
+  };
+
+  const handleConfirmComparison = () => {
+    if (movie) {
+      comparisonModel.add(movie);
+    }
+    setModalComparison(false);
+  };
+
+  const handleCancelComparison = () => {
+    setModalComparison(false);
   };
 
   if (loading) {
@@ -102,6 +143,17 @@ export const MovieDetailPage = () => {
         <IconButton onClick={() => navigate(-1)} className={styles.backButton}>
           <Icon24ArrowLeftOutline />
         </IconButton>
+        {movie && (
+          <IconButton onClick={handleCompare}>
+            <Icon24ArrowLeftRightCornersOutline
+              fill={
+                isInComparison ? "#16ff01" : "var(--vkui--color_text_secondary)"
+              }
+              width={28}
+              height={28}
+            />
+          </IconButton>
+        )}
         {movie && (
           <IconButton onClick={handleToggleFavorite}>
             {isFavorite ? (
@@ -205,6 +257,84 @@ export const MovieDetailPage = () => {
           </Text>
         </Box>
       </Group>
+
+      <ModalRoot
+        activeModal={modalAction ? "confirm-favorite" : undefined}
+        onClose={handleCancel}
+      >
+        <ModalPage
+          id="confirm-favorite"
+          onClose={handleCancel}
+          header={
+            <Header>
+              {modalAction === "add"
+                ? "Добавить в избранное"
+                : "Удалить из избранного"}
+            </Header>
+          }
+        >
+          <Group>
+            <Box style={{ padding: 16, textAlign: "center" }}>
+              <Text weight="2">
+                {modalAction === "add"
+                  ? `Вы уверены, что хотите добавить "${movieTitle}" в избранное?`
+                  : `Вы уверены, что хотите удалить "${movieTitle}" из избранного?`}
+              </Text>
+            </Box>
+
+            <div
+              style={{
+                display: "flex",
+                gap: 12,
+                padding: 16,
+                justifyContent: "center",
+              }}
+            >
+              <Button size="l" mode="secondary" onClick={handleCancel}>
+                Отмена
+              </Button>
+              <Button size="l" mode="primary" onClick={handleConfirm}>
+                {modalAction === "add" ? "Добавить" : "Удалить"}
+              </Button>
+            </div>
+          </Group>
+        </ModalPage>
+      </ModalRoot>
+
+      <ModalRoot
+        activeModal={modalComparison ? "confirm-comparison" : undefined}
+        onClose={handleCancelComparison}
+      >
+        <ModalPage
+          id="confirm-comparison"
+          onClose={handleCancelComparison}
+          header={<Header>Добавить в сравнение</Header>}
+        >
+          <Group>
+            <Box style={{ padding: 16, textAlign: "center" }}>
+              <Text weight="2">
+                В сравнении уже 2 фильма. При добавлении нового первый будет заменён.
+              </Text>
+            </Box>
+
+            <div
+              style={{
+                display: "flex",
+                gap: 12,
+                padding: 16,
+                justifyContent: "center",
+              }}
+            >
+              <Button size="l" mode="secondary" onClick={handleCancelComparison}>
+                Отмена
+              </Button>
+              <Button size="l" mode="primary" onClick={handleConfirmComparison}>
+                Заменить
+              </Button>
+            </div>
+          </Group>
+        </ModalPage>
+      </ModalRoot>
     </Box>
   );
 };

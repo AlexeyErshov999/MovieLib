@@ -1,0 +1,175 @@
+.container {
+  width: 70%;
+  padding: 0 16px;
+  margin: 0 auto;
+  padding-top: 12px;
+  padding-bottom: 100px;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.clearButton {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.emptyState {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  min-height: 60vh;
+  text-align: center;
+}
+
+.emptyIcon {
+  opacity: 0.3;
+  margin-bottom: 12px;
+}
+
+.emptyText {
+  color: var(--vkui--color_text_secondary);
+}
+
+.tableContainer {
+  overflow-x: auto;
+}
+
+.comparisonTable {
+  width: 100%;
+  border-collapse: collapse;
+  background-color: var(--vkui--color_background_content);
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.comparisonTable th,
+.comparisonTable td {
+  padding: 16px;
+  text-align: left;
+  border-bottom: 1px solid var(--vkui--color_separator);
+}
+
+.comparisonTable th {
+  background-color: var(--vkui--color_background_secondary);
+  font-weight: 600;
+  width: 30%;
+  color: var(--vkui--color_text_secondary);
+}
+
+.comparisonTable td {
+  vertical-align: top;
+}
+
+.movieColumn {
+  width: 35%;
+  text-align: center;
+}
+
+.posterWrapper {
+  height: 180px;
+  margin: 0 auto 12px;
+  border-radius: 8px;
+  overflow: hidden;
+  background-color: var(--vkui--color_background_secondary);
+}
+
+.posterImage {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.posterPlaceholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px;
+}
+
+.placeholderText {
+  text-align: center;
+  color: var(--vkui--color_text_secondary);
+  font-size: 12px;
+}
+
+.movieTitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  margin-bottom: 4px;
+}
+
+.removeButton {
+  margin-top: 8px;
+}
+
+.ratingBadge {
+  display: inline-flex;
+  align-items: center;
+  gap: 4px;
+  background-color: rgba(0, 0, 0, 0.8);
+  border-radius: 6px;
+  padding: 4px 8px;
+  margin-top: 8px;
+}
+
+.starIcon {
+  width: 14px;
+  height: 14px;
+}
+
+.ratingText {
+  font-weight: 600;
+  font-size: 14px;
+}
+
+.genreList {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.genreBadge {
+  background-color: var(--vkui--color_background_secondary);
+  padding: 4px 8px;
+  border-radius: 4px;
+  font-size: 12px;
+}
+
+.rowLabel {
+  font-weight: 500;
+  color: var(--vkui--color_text_secondary);
+}
+
+@media (max-width: 768px) {
+  .container {
+    width: 100%;
+    padding: 0 8px;
+  }
+  
+  .comparisonTable th,
+  .comparisonTable td {
+    padding: 12px 8px;
+    font-size: 14px;
+  }
+  
+  .movieColumn {
+    width: 40%;
+  }
+  
+  .posterWrapper {
+    width: 80px;
+    height: 120px;
+  }
+}
