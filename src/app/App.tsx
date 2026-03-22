@@ -1,14 +1,20 @@
+import { useEffect } from "react";
 import { useLocation } from "react-router-dom";
 import { View, Epic, Panel, PanelHeader } from "@vkontakte/vkui";
 import { Navigation } from "../features/navigation";
 import { HomePage } from "../pages/HomePage";
 import { FavoritesPage } from "../pages/FavoritesPage";
 import { ComparisonPage } from "../pages/ComparisonPage";
+import { moviesModel } from "../features/movies/model";
 import "./App.css";
 import { ROUTES } from "../constants/routes";
 
 export const App = () => {
   const location = useLocation();
+
+  useEffect(() => {
+    moviesModel.load();
+  }, []);
 
   const getActiveTab = () => {
     const path = location.pathname;
