@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
   Group,
@@ -23,52 +23,36 @@ import {
   Icon24ArrowLeftRightCornersOutline,
 } from "@vkontakte/icons";
 import { useUnit } from "effector-react";
-import type { Movie } from "../../api/types";
-import { MOCK_MOVIES } from "../../constants/movies";
 import { getMovieTitle, getPosterUrl, getRatingColor } from "../../utils/movie";
 import { favoritesModel } from "../../features/favorites/model";
 import { comparisonModel, $comparisonStore } from "../../features/comparison/model/ComparisonStore";
+import { $moviesStore, $moviesLoading } from "../../features/movies/model";
 import styles from "./MovieDetailPage.module.css";
 
 export const MovieDetailPage = () => {
   const { id } = useParams();
   const navigate = useNavigate();
 
-  const [movie, setMovie] = useState<Movie | null>(null);
-  const [loading, setLoading] = useState(true);
   const [isFavorite, setIsFavorite] = useState(false);
   const [modalAction, setModalAction] = useState<"add" | "remove" | null>(null);
   const [modalComparison, setModalComparison] = useState(false);
 
+  const loading = useUnit($moviesLoading);
+  const movies = useUnit($moviesStore);
   const comparisonMovies = useUnit($comparisonStore);
+
+  const movie = useMemo(() => {
+    return movies.find((m) => m.id === Number(id)) || null;
+  }, [movies, id]);
+
   const isInComparison = movie ? comparisonMovies.some((m) => m.id === movie.id) : false;
   const comparisonCount = comparisonMovies.length;
 
   useEffect(() => {
-    const loadMovie = async () => {
-      try {
-        const foundMovie = MOCK_MOVIES.find((m) => m.id === Number(id));
-        setMovie(foundMovie || null);
-        if (foundMovie) {
-          setIsFavorite(favoritesModel.isFavorite(foundMovie.id));
-        }
-        await new Promise((res) => setTimeout(() => res(null), 800));
-      } catch (error) {
-        console.error("Ошибка загрузки фильма:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadMovie();
-  }, [id]);
-
-  // Подписка на изменения избранного
-  useEffect(() => {
     if (!movie) return;
 
-    const unsubscribe = favoritesModel.subscribe((movies) => {
-      setIsFavorite(movies.some((m) => m.id === movie.id));
+    const unsubscribe = favoritesModel.subscribe((favMovies) => {
+      setIsFavorite(favMovies.some((m) => m.id === movie.id));
     });
 
     return () => unsubscribe();

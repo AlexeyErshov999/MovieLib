@@ -2,7 +2,7 @@ import axios from 'axios';
 import type { AxiosInstance, AxiosRequestConfig } from 'axios';
 
 const config: AxiosRequestConfig = {
-  baseURL: import.meta.env.VITE_API_URL || 'https://api.poiskkino.dev/v1.4',
+  baseURL: import.meta.env.VITE_API_URL || 'https://api.poiskkino.dev/',
   timeout: 10000,
   headers: {
     'Content-Type': 'application/json',

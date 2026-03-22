@@ -1,4 +1,4 @@
-import { StrictMode } from 'react'
+// import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
 import { Routes, Route } from 'react-router-dom'
 
@@ -13,7 +13,7 @@ import { HashRouter } from 'react-router-dom';
 import { ROUTES } from './constants/routes.ts';
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+  // <StrictMode>
     <ConfigProvider>
       <AppRoot>
         <HashRouter>
@@ -24,5 +24,5 @@ createRoot(document.getElementById('root')!).render(
         </HashRouter>
       </AppRoot>
     </ConfigProvider>
-  </StrictMode>,
+  // </StrictMode>,
 )

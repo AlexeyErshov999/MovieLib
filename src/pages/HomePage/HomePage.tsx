@@ -9,9 +9,10 @@ import {
   Spinner,
 } from "@vkontakte/vkui";
 import { Icon12Star } from "@vkontakte/icons";
-import { useEffect, useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { MOCK_MOVIES } from "../../constants/movies";
+import { useUnit } from "effector-react";
+import { $moviesStore, $moviesLoading } from "../../features/movies/model";
 import type { Movie } from "../../api/types";
 import { getMovieTitle, getPosterUrl, getRatingColor } from "../../utils/movie";
 import { MovieFilters } from "../../features/filters";
@@ -19,25 +20,13 @@ import styles from "./HomePage.module.css";
 
 export const HomePage = () => {
   const navigate = useNavigate();
-  const [movies, setMovies] = useState<Movie[]>([]);
-  const [loading, setLoading] = useState(true);
+  const movies = useUnit($moviesStore);
+  const loading = useUnit($moviesLoading);
   const [filteredMovies, setFilteredMovies] = useState<Movie[]>([]);
 
   useEffect(() => {
-    const loadMovies = async () => {
-      try {
-        setMovies(MOCK_MOVIES);
-        setFilteredMovies(MOCK_MOVIES);
-        await new Promise((res) => setTimeout(() => res(null), 800));
-      } catch (error) {
-        console.error("Ошибка загрузки фильмов:", error);
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    loadMovies();
-  }, []);
+    setFilteredMovies(movies);
+  }, [movies]);
 
   const handleFilter = (filtered: Movie[]) => {
     setFilteredMovies(filtered);
